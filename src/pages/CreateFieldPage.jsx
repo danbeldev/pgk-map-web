@@ -6,7 +6,7 @@ import {
     TextField,
     Typography,
     Button,
-    Box, CircularProgress, LinearProgress,
+    Box, LinearProgress, Snackbar, Alert,
 } from "@mui/material";
 import React, {useState} from "react";
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
@@ -17,6 +17,9 @@ import ruLocale from "date-fns/locale/ru";
 import {uploadZipFile} from "../network/PgkMapApi";
 import * as PropTypes from "prop-types";
 import ErrorIcon from '@mui/icons-material/Error';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {useNavigate} from "react-router-dom";
 
 function CheckCircleIcon(props) {
     return null;
@@ -27,6 +30,8 @@ CheckCircleIcon.propTypes = {
     sx: PropTypes.shape({mb: PropTypes.number, fontSize: PropTypes.number})
 };
 const CreateFieldPage = () => {
+    const navigate = useNavigate()
+
     const [file, setFile] = useState(null);
     const [activeStep, setActiveStep] = useState(0);
     const [markers, setMarkers] = useState([]);
@@ -39,22 +44,50 @@ const CreateFieldPage = () => {
     // Шаги
     const steps = ["Основная информация", "Добавление местоположений"];
 
-    // Функция для перехода к следующему шагу
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+
+// Функция для перехода к следующему шагу
     const handleNext = () => {
-        setActiveStep((prev) => prev + 1)
+        if (activeStep === 0) {
+            // Проверка первого шага: обязательные поля
+            if (!name || !selectedDate || !file) {
+                setAlertMessage('Пожалуйста, заполните все поля');
+                setAlertOpen(true);
+                return;
+            }
+        }
+
+        if (activeStep === 1) {
+            // Проверка второго шага: минимум 3 маркера
+            if (markers.length < 3) {
+                setAlertMessage('Пожалуйста, добавьте минимум 3 маркера');
+                setAlertOpen(true);
+                return;
+            }
+        }
+
+        setActiveStep((prev) => prev + 1);
+
         if (activeStep === steps.length - 1) {
-            setStatus("Loading")
-            setProgress(0)
+            setStatus("Loading");
+            setProgress(0);
             uploadZipFile(
                 name,
-                selectedDate.toISOString().split('T')[0],
-                markers.flatMap(marker => marker),
+                selectedDate.toISOString().split("T")[0],
+                markers.flatMap((marker) => marker),
                 file,
                 setProgress
-            ).then(r => {
-                setStatus("Success")
-            }).catch(e => setStatus("Failed"))
+            )
+                .then((r) => {
+                    setStatus("Success");
+                })
+                .catch((e) => setStatus("Failed"));
         }
+    };
+
+    const handleAlertClose = () => {
+        setAlertOpen(false);
     };
 
     // Функция для перехода к предыдущему шагу
@@ -138,14 +171,73 @@ const CreateFieldPage = () => {
 
                             {/* Если процесс завершен успешно или с ошибкой */}
                             {status !== "Loading" && (
-                                <Button
-                                    onClick={handleReset}
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{mt: 2}}
+
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between', // Располагает кнопки по горизонтали с равным расстоянием между ними
+                                        width: '100%',  // Занимает всю доступную ширину
+                                        gap: 2,  // Отступы между кнопками
+                                        mt: 3,
+                                    }}
                                 >
-                                    Начать заново
-                                </Button>
+
+                                    {/* Кнопка "Вернуться" с иконкой */}
+                                    <Button
+                                        onClick={() => navigate('/')}
+                                        variant="outlined"
+                                        color="secondary"
+                                        sx={{
+                                            minWidth: 200,
+                                            padding: '12px 24px',
+                                            fontSize: '16px',
+                                            fontWeight: 600,
+                                            borderRadius: '50px',
+                                            boxShadow: 3,
+                                            transition: 'all 0.3s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            '&:hover': {
+                                                boxShadow: 6,
+                                                borderColor: 'secondary.main',
+                                                transform: 'scale(1.05)',
+                                            },
+                                        }}
+                                    >
+                                        <ArrowBackIcon sx={{mr: 1}}/>
+                                        Вернуться
+                                    </Button>
+
+                                    {/* Кнопка "Начать заново" с иконкой */}
+                                    <Button
+                                        onClick={handleReset}
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{
+                                            minWidth: 200,
+                                            padding: '12px 24px',
+                                            fontSize: '16px',
+                                            fontWeight: 600,
+                                            borderRadius: '50px',
+                                            boxShadow: 3,
+                                            transition: 'all 0.3s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            '&:hover': {
+                                                boxShadow: 6,
+                                                backgroundColor: 'primary.main',
+                                                transform: 'scale(1.05)',
+                                            },
+                                        }}
+                                    >
+                                        <RestartAltIcon sx={{mr: 1}}/>
+                                        Начать заново
+                                    </Button>
+
+
+                                </Box>
                             )}
 
                             {/* Прогресс для статуса "Loading" */}
@@ -275,6 +367,12 @@ const CreateFieldPage = () => {
                         </Box>
                     )}
                 </Box>
+
+                <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+                    <Alert onClose={handleAlertClose} severity="warning" sx={{width: "100%"}}>
+                        {alertMessage}
+                    </Alert>
+                </Snackbar>
             </Paper>
         </Box>
     );

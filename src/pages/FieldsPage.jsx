@@ -68,7 +68,7 @@ const FieldsPage = () => {
     const handleDelete = () => {
         if (selectedField) {
             handleOpenDialog(selectedField);
-            handleMenuClose();
+            setAnchorEl(null);
         }
     };
 
