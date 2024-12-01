@@ -24,7 +24,7 @@ code {
 .container {
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #ffffff, #d9e9fc);
-  padding: 20px;
+  /*padding: 20px;*/
   min-height: 100vh;
 }
 
@@ -63,6 +63,9 @@ code {
   background-color: #4c7be1;
   color: white;
   cursor: pointer;
+  text-transform: none;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 .icon-button {

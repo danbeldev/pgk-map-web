@@ -11,7 +11,6 @@ import {MapPointsDrawer} from "./MapPointsDrawer";
 import {MapPointDrawer} from "./MapPointDrawer";
 import {useParams} from "react-router-dom";
 
-
 export const LocationFinderDummy = ({setMarkers}) => {
     useMapEvents({
         click(e) {
@@ -29,6 +28,11 @@ export const customIcon = new L.Icon({
 });
 
 const MapComponent = () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const latitude = queryParams.get("lat") || undefined
+    const longitude = queryParams.get("lon") || undefined
+    const fieldId = queryParams.get("fieldId") || undefined
+
     const [searchQuery, setSearchQuery] = useState("");
 
     const [field, setField] = useState(null)
@@ -36,7 +40,6 @@ const MapComponent = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [fields, setFields] = useState([])
 
-    const { fieldId, latitude, longitude } = useParams();
     const position = [latitude === undefined ? 53.2001 : latitude, latitude === undefined ? 50.15 : longitude];
 
     useEffect(() => {
@@ -90,7 +93,7 @@ const MapComponent = () => {
 
             <MapContainer
                 center={position}
-                zoom={10}
+                zoom={12}
                 style={{height: "100vh", width: "100%"}}
                 zoomControl={false}
             >
