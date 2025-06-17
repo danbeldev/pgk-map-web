@@ -98,7 +98,7 @@ const CreateFieldPage = () => {
 
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
-        if (uploadedFile && uploadedFile.type === "application/zip") {
+        if (uploadedFile) {
             setFile(uploadedFile);
         } else {
             alert("Пожалуйста, выберите файл типа .zip");
