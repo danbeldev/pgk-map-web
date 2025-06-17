@@ -9,7 +9,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import {MapFieldsDrawer} from "./MapFieldsDrawer";
 import {MapPointsDrawer} from "./MapPointsDrawer";
 import {MapPointDrawer} from "./MapPointDrawer";
-import {useParams} from "react-router-dom";
 
 export const LocationFinderDummy = ({setMarkers}) => {
     useMapEvents({
