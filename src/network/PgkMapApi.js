@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const BASE_URL = 'http://localhost:10099/pgk/map/v1.0';
+const BASE_URL = 'https://map.matstart.ru:30/pgk/map/v1.0';
 
 // Настройка axios с базовым URL
 const api = axios.create({
