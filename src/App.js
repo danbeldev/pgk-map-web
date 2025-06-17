@@ -1,6 +1,6 @@
 import './App.css';
 import FieldsPage from "./pages/FieldsPage";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import MapComponent from "./pages/map/Map";
 import CreateFieldPage from "./pages/CreateFieldPage";
 import EditFieldPage from "./pages/EditFieldPage";
@@ -12,7 +12,7 @@ function App() {
         <BrowserRouter>
             <div className="App">
                 <Routes>
-                    {localStorage.getItem("authToken") !== null ?
+                    {localStorage.getItem("token") !== null ?
                         <>
                             <Route path="/" element={<FieldsPage/>}/>
                             <Route path="/map" element={<MapComponent/>}/>
@@ -23,10 +23,13 @@ function App() {
                                     <Route path='/fields/:id/edit' element={<EditFieldPage/>}/>
                                 </>
                             }
+
+                            <Route path="*" element={<Navigate to="/"/>}/>
                         </>
                         :
                         <>
                             <Route path='/login' element={<AuthPage/>}/>
+                            <Route path="*" element={<Navigate to="/login"/>}/>
                         </>
                     }
 

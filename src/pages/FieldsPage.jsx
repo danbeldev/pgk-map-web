@@ -15,7 +15,7 @@ import {
 import {Button} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {deleteFieldById, getAllFields} from "../network/PgkMapApi";
+import {AuthAPI, deleteFieldById, getAllFields} from "../network/PgkMapApi";
 import {getCoordinatesBorders} from "./map/MapFieldsDrawer";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -218,17 +218,32 @@ const FieldsPage = () => {
                             onChange={(e) => setSearch(e.target.value)}
                         />
 
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddIcon/>}
-                            className='add-button'
-                            onClick={() => navigate('/create')}
-                            sx={{whiteSpace: 'nowrap', paddingX: 2}}
-                        >
-                            Добавить
-                        </Button>
+                        { localStorage.getItem("isAdmin") === "true" &&
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon/>}
+                                className='add-button'
+                                onClick={() => navigate('/create')}
+                                sx={{whiteSpace: 'nowrap', paddingX: 2}}
+                            >
+                                Добавить
+                            </Button>
+                        }
                     </Box>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className='add-button'
+                        onClick={() => {
+                            AuthAPI.signOut()
+                            window.location.reload()
+                        }}
+                        sx={{whiteSpace: 'nowrap', paddingX: 2}}
+                    >
+                        Выйти
+                    </Button>
                 </Toolbar>
             </AppBar>
 
@@ -366,16 +381,18 @@ const FieldsPage = () => {
                                         onClick={() => handleClickCard(field)}
                                     >
                                         {/* Меню кнопка в верхнем правом углу */}
-                                        <Box sx={{
-                                            position: 'absolute',
-                                            top: 8,
-                                            right: 8,
-                                            zIndex: 1,
-                                        }} onClick={(e) => e.stopPropagation()}>
-                                            <IconButton onClick={(e) => handleMenuOpen(e, field)}>
-                                                <MoreVertIcon/>
-                                            </IconButton>
-                                        </Box>
+                                        { localStorage.getItem("isAdmin") === "true" &&
+                                            <Box sx={{
+                                                position: 'absolute',
+                                                top: 8,
+                                                right: 8,
+                                                zIndex: 1,
+                                            }} onClick={(e) => e.stopPropagation()}>
+                                                <IconButton onClick={(e) => handleMenuOpen(e, field)}>
+                                                    <MoreVertIcon/>
+                                                </IconButton>
+                                            </Box>
+                                        }
 
                                         {/* Содержимое карточки */}
                                         <CardContent>
